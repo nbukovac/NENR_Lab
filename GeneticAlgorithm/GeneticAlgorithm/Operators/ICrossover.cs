@@ -2,6 +2,6 @@
 {
     public interface ICrossover<T>
     {
-        T Crossover(T chromosome1, T chromosome2);
+        T Cross(T chromosome1, T chromosome2);
     }
 }

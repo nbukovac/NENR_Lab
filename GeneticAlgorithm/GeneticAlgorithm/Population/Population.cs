@@ -6,7 +6,7 @@ using GeneticAlgorithm.Helpers;
 
 namespace GeneticAlgorithm.Population
 {
-    public class Population<T> : IEnumerable<T> where T : DecimalArrayChromosome
+    public class Population<T> : IEnumerable<T>
     {
         public List<T> PopulationList { get; set; }
         public int Size { get; }
@@ -19,7 +19,7 @@ namespace GeneticAlgorithm.Population
         
         public IEnumerator<T> GetEnumerator()
         {
-            return (IEnumerator<T>)PopulationList.GetEnumerator();
+            return PopulationList.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -34,26 +34,19 @@ namespace GeneticAlgorithm.Population
             return PopulationList.ElementAt(index);
         }
 
+        public int Count()
+        {
+            return PopulationList.Count;
+        }
+        
         public void Add(T element)
         {
             PopulationList.Add(element);
         }
         
-        public void RemoveAtIndex(int index)
+        public void Remove(T element)
         {
-            HelperFunctions.CheckIndex(index, PopulationList.Count);
-
-            PopulationList.RemoveAt(index);
-        }
-        
-        public T GetBest()
-        {
-            return PopulationList.OrderBy(x => x.Fitness).First();
-        }
-
-        public T GetWorst()
-        {
-            return PopulationList.OrderBy(x => x.Fitness).Last();
+            PopulationList.Remove(element);
         }
     }
 }

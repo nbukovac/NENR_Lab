@@ -3,7 +3,7 @@ using GeneticAlgorithm.Population;
 
 namespace GeneticAlgorithm.Operators
 {
-    public interface ISelection<T> where T : DecimalArrayChromosome
+    public interface ISelection<T>
     {
         List<T> Select(Population<T> population);
     }

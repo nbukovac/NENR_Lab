@@ -23,13 +23,10 @@ namespace GeneticAlgorithm.Operators.Selection
                 var index = HelperFunctions.Random.Next(population.Size);
                 var chromosome = population.GetAtIndex(index);
 
-                if (!selected.Contains(chromosome))
-                {
-                    selected.Add(chromosome);
-                }
+                selected.Add(chromosome);
             }
-
-            return selected;
+               
+            return selected.OrderBy(x => x.Fitness).ToList();
         }
     }
 }
