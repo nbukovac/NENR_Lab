@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using GeneticAlgorithm.Population;
 
@@ -13,7 +14,7 @@ namespace GeneticAlgorithm.Fitness
 
         private static readonly Func<DecimalArrayChromosome, decimal, decimal, decimal> FitnessFunc = (v, x, y) =>
             (decimal) (Math.Sin((double) (v[0] + v[1] * x)) + (double) v[2] * Math.Cos((double) (x * (v[3] + y))) *
-                       (1 / (1 + Math.Exp(Math.Pow((double) (x - v[4]), 2)))));
+                       (1.0 / (1 + Math.Exp(Math.Pow((double) (x - v[4]), 2)))));
 
         public FitnessFunction(string filePath)
         {
@@ -28,12 +29,21 @@ namespace GeneticAlgorithm.Fitness
         {
             using (var inputStream = new StreamReader(filePath))
             {
-                var line = inputStream.ReadLine().Trim();
-                var splitData = line.Split('\t');
-                
-                _x.Add(decimal.Parse(splitData[0]));
-                _y.Add(decimal.Parse(splitData[1]));
-                _f.Add(decimal.Parse(splitData[2]));
+                var line = string.Empty;
+
+                while ((line = inputStream.ReadLine()) != null)
+                {
+                    var splitData = line.Trim().Split('\t');
+
+                    if (splitData.Length != 3)
+                    {
+                        continue;
+                    }
+                    
+                    _x.Add(decimal.Parse(splitData[0], NumberStyles.Any));
+                    _y.Add(decimal.Parse(splitData[1], NumberStyles.Any));
+                    _f.Add(decimal.Parse(splitData[2], NumberStyles.Any));
+                }
             }
         }
         
@@ -43,7 +53,7 @@ namespace GeneticAlgorithm.Fitness
 
             for (var i = 0; i < _x.Count; i++)
             {
-                sum += (decimal)Math.Pow((double)(FitnessFunc(chromosome, _x[i], _y[i]) - _f[i]), 2);
+                sum += (decimal) Math.Pow((double)(FitnessFunc(chromosome, _x[i], _y[i]) - _f[i]), 2);
             }
 
             return sum / _x.Count;

@@ -52,7 +52,7 @@ namespace GeneticAlgorithm.Algorithm
                 {
                     var selectedFromPopulation = Selection.Select(Population);
                     var childChromosome =
-                        Crossover.Cross(selectedFromPopulation.First(), selectedFromPopulation.Last());
+                        Crossover.Cross(selectedFromPopulation.First(), selectedFromPopulation[1]);
                     childChromosome = Mutation.Mutate(childChromosome);
                     childChromosome.Fitness = FitnessFunction.GetValue(childChromosome);
                     
