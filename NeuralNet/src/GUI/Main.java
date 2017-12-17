@@ -158,7 +158,7 @@ public class Main extends Application {
                         }
 
                         ann = new ANN(architecture, trainData.getInput(), trainData.getOutput(),
-                                iterationLimit, learningRate, 0.001, 10e-6, 0.7, batchSize);
+                                iterationLimit, learningRate, 0.001, 10e-6, batchSize);
 
                         ann.start();
                         annLearned = true;

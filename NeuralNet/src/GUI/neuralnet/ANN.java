@@ -21,17 +21,15 @@ public class ANN {
     private double learningRate;
     private double learningRateBias;
     private double errorLimit;
-    private double momentum;
     private int sampleSize;
 
     public ANN(String layerArchitecture, List<double[]> trainSetInput, List<double[]> trainSetOutput, int iterationMaximum,
-               double learningRate, double learningRateBias, double errorLimit, double momentum, int sampleSize) {
+               double learningRate, double learningRateBias, double errorLimit, int sampleSize) {
 
         this.iterationMaximum = iterationMaximum;
         this.learningRate = learningRate;
         this.learningRateBias = learningRateBias;
         this.errorLimit = errorLimit;
-        this.momentum = momentum;
         this.sampleSize = sampleSize;
 
         this.trainSetInput = trainSetInput;
@@ -114,7 +112,6 @@ public class ANN {
             double[] layerBias = bias.get(i);
             double[][] change = new double[layerWeights.length][layerWeights[0].length];
             double[] biasChange = new double[layerBias.length];
-            double[][] prevChange = new double[layerWeights.length][layerWeights[0].length];
 
             for (int l = 0; l < errors.size(); l++) {
                 double[] yOut = yOuts.get(l).get(i);
@@ -133,7 +130,7 @@ public class ANN {
 
             for (int j = 0; j < layerWeights.length; j++) {
                 for (int k = 0; k < layerWeights[j].length; k++) {
-                    layerWeights[j][k] += momentum * prevChange[j][k] + (1 - momentum) * learningRate * change[j][k] / errors.size();
+                    layerWeights[j][k] += learningRate * change[j][k] / errors.size();
                 }
             }
 
