@@ -1,27 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
+using Anfis.Helpers;
+using Anfis.TNorm;
 using Anfis.TrainingSet;
+using Anfis.TransferFunction;
 
 namespace Anfis
 {
     class Program
     {
-        private const int XLowerBound = -4;
-        private const int XUpperBound = 4;
-        private const int YLowerBound = -4;
-        private const int YUpperBound = 4;
         
         public static void Main(string[] args)
         {
-            CreateTrainingSet();
+            var dataSet = CreateTrainingSet();
+            var anfis = new Anfis(3, new ProductTNorm(), new SigmoidalTransferFunction(), true, 0.00001, 100_000, 10e-5, dataSet);
+            anfis.StartAlgorithm();
         }
 
-        private static void CreateTrainingSet()
+        private static List<TrainingData> CreateTrainingSet()
         {
-            var trainingSet = TrainingSetGenerator.CreateTrainingSet(XLowerBound, XUpperBound, YLowerBound, YUpperBound);
-            
-            Console.WriteLine(trainingSet.Count);
-            
-            trainingSet.ForEach(Console.WriteLine);
+            var trainingSet = TrainingSetGenerator.CreateTrainingSet(Constants.XLowerBound, Constants.XUpperBound, 
+                Constants.YLowerBound, Constants.YUpperBound);
+
+            return trainingSet;
         }
     }
 }

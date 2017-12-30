@@ -1,6 +1,6 @@
 ﻿namespace Anfis.TrainingSet
 {
-    public class TrainingSetExample
+    public class TrainingData
     {
         public double X { get; set; }
         public double Y { get; set; }

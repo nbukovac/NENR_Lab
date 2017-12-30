@@ -9,15 +9,15 @@ namespace Anfis.TrainingSet
         private static readonly Func<double, double, double> Function = (x, y) =>
             (Math.Pow(x - 1, 2) + Math.Pow(y + 2, 2) - 5 * x * y + 3) * Math.Pow(Math.Cos(x / 5), 2);
 
-        public static List<TrainingSetExample> CreateTrainingSet(int xStart, int xEnd, int yStart, int yEnd)
+        public static List<TrainingData> CreateTrainingSet(int xStart, int xEnd, int yStart, int yEnd)
         {
-            var trainingSet = new List<TrainingSetExample>();
+            var trainingSet = new List<TrainingData>();
 
             for (int i = xStart; i <= xEnd; i++)
             {
                 for (int j = yStart; j <= yEnd; j++)
                 {
-                    var trainingExample = new TrainingSetExample()
+                    var trainingExample = new TrainingData()
                     {
                         X = i,
                         Y = j,
