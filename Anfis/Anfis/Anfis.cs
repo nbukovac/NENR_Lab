@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Anfis.Helpers;
 using Anfis.TNorm;
 using Anfis.TrainingSet;
@@ -143,7 +144,7 @@ namespace Anfis
         {
             var errorPerEpoch = new List<double>();
 
-            for (int i = 1; i <= EpochLimit; i++)
+            for (int epoch = 1; epoch <= EpochLimit; epoch++)
             {
                 if (StochasticGradient)
                 {
@@ -154,15 +155,15 @@ namespace Anfis
                 }
                 else
                 {
-                    
+                    CalculateGradient();
                 }
 
                 var error = CalculateError();
                 errorPerEpoch.Add(error);
 
-                if (i % 1_000 == 0 || i < 100)
+                if (epoch % 1_000 == 0 || epoch < 100)
                 {
-                    Console.WriteLine("Epoch => " + i + "\t\terror => " + error);
+                    Console.WriteLine("Epoch => " + epoch + "\t\terror => " + error);
                 }
                 
                 if (error < ErrorTermination)
@@ -179,7 +180,7 @@ namespace Anfis
             return errorSum / TrainingData.Count;
         }
 
-        #region Gradients
+        #region Gradient algorithms
 
         private void CalculateStochasticGradient(int index)
         {
@@ -205,6 +206,44 @@ namespace Anfis
 
         }
 
+        private void CalculateGradient()
+        {
+            var gradientP = HelperFunctions.ArrayInitializer(NumberOfRules, false);
+            var gradientQ = HelperFunctions.ArrayInitializer(NumberOfRules, false);
+            var gradientR = HelperFunctions.ArrayInitializer(NumberOfRules, false);
+            var gradientA1 = HelperFunctions.ArrayInitializer(NumberOfRules, false);
+            var gradientA2 = HelperFunctions.ArrayInitializer(NumberOfRules, false);
+            var gradientB1 = HelperFunctions.ArrayInitializer(NumberOfRules, false);
+            var gradientB2 = HelperFunctions.ArrayInitializer(NumberOfRules, false);
+
+            foreach (var sample in TrainingData)
+            {
+                var f = CalculateF(sample.X, sample.Y, out var w, out var z);
+
+                
+                for (int i = 0; i < NumberOfRules; i++)
+                {
+                    gradientP[i] += GradientP(i, sample, f, w);
+                    gradientQ[i] += GradientQ(i, sample, f, w);
+                    gradientR[i] += GradientR(i, sample, f, w);
+
+                    gradientA1[i] += GradientA1(sample, i, f, w, z);
+                    gradientA2[i] += GradientA2(sample, i, f, w, z);
+                    gradientB1[i] += GradientB1(sample, i, f, w, z);
+                    gradientB2[i] += GradientB2(sample, i, f, w, z);
+                }
+            }
+
+            for (int i = 0; i < NumberOfRules; i++)
+            {
+                Update(i, gradientP[i], gradientQ[i], gradientR[i], gradientA1[i], gradientA2[i], gradientB1[i], gradientB2[i]);
+            }
+        }
+        
+        #endregion
+
+        #region Gradients
+        
         private double GradientO(double o, TrainingData sample)
         {
             return o - sample.F;
@@ -237,40 +276,40 @@ namespace Anfis
 
             for (int i = 0; i < z.Length; i++)
             {
-                sumWZ += w[i] * z[i];
+                sumWZ += w[i] * (z[index] - z[i]);
             }
 
-            return (sumW * z[index] - sumWZ) / Math.Pow(sumW, 2);
+            return sumWZ / Math.Pow(sumW, 2);
         }
 
         private double GradientA1(TrainingData sample, int index, double o, double[] w, double[] z)
         {
-            var a = SigmoidA(sample.X, index);
-            var gradient = a * B1[index] * (1 - a) * SigmoidB(sample.Y, index);
+            var miA = SigmoidA(sample.X, index);
+            var gradient = B1[index] * miA * (1 - miA) * SigmoidB(sample.Y, index);
 
             return GradientO(o, sample) * GradientW(index, w, z) * gradient;
         }
         
         private double GradientB1(TrainingData sample, int index, double o, double[] w, double[] z)
         {
-            var a = SigmoidA(sample.X, index);
-            var gradient = -1 * sample.X - a * A1[index] * (1 - a) * SigmoidB(sample.Y, index);
+            var miA = SigmoidA(sample.X, index);
+            var gradient = -1 * (sample.X - A1[index]) * miA * (1 - miA) * SigmoidB(sample.Y, index);
 
             return GradientO(o, sample) * GradientW(index, w, z) * gradient;
         }
         
         private double GradientA2(TrainingData sample, int index, double o, double[] w, double[] z)
         {
-            var b = SigmoidB(sample.Y, index);
-            var gradient = b * B2[index] * (1 - b) * SigmoidA(sample.X, index);
+            var miB = SigmoidB(sample.Y, index);
+            var gradient = B2[index] * miB * (1 - miB) * SigmoidA(sample.X, index);
 
             return GradientO(o, sample) * GradientW(index, w, z) * gradient;
         }
         
         private double GradientB2(TrainingData sample, int index, double o, double[] w, double[] z)
         {
-            var b = SigmoidB(sample.Y, index);
-            var gradient = -1 * sample.Y - b * A2[index] * (1 - b) * SigmoidB(sample.Y, index);
+            var miB = SigmoidB(sample.Y, index);
+            var gradient = -1 * (sample.Y - A2[index]) * miB * (1 - miB) * SigmoidB(sample.Y, index);
 
             return GradientO(o, sample) * GradientW(index, w, z) * gradient;
         }
@@ -285,9 +324,25 @@ namespace Anfis
             B1[index] -= gradientB1 * LearningRate;
             B2[index] -= gradientB2 * LearningRate;
 
-            P[index] -= gradientP * LearningRate * 10;
-            Q[index] -= gradientQ * LearningRate * 10;
-            R[index] -= gradientR * LearningRate * 10;
+            P[index] -= gradientP * LearningRate;
+            Q[index] -= gradientQ * LearningRate;
+            R[index] -= gradientR * LearningRate;
         }
+
+        #region File write methods
+
+        public void WriteFuzzySetRules(string fileName)
+        {
+            var lines = new List<string>();
+            
+            for (int i = 0; i < NumberOfRules; i++)
+            {
+                lines.Add("A1 = " + A1[i] + "\tB1 = " + B1[i] + "\tA2 = " + A2[i] + "\tB2 = " + B2[i]);
+            }
+            
+            HelperFunctions.WriteToFile(Environment.CurrentDirectory + Constants.ResultsFolder + fileName, lines);
+        }
+
+        #endregion
     }
 }

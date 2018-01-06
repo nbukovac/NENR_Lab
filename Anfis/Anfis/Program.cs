@@ -7,14 +7,16 @@ using Anfis.TransferFunction;
 
 namespace Anfis
 {
-    class Program
+    public static class Program
     {
         
         public static void Main(string[] args)
         {
             var dataSet = CreateTrainingSet();
-            var anfis = new Anfis(3, new ProductTNorm(), new SigmoidalTransferFunction(), true, 0.00001, 100_000, 10e-5, dataSet);
+            var anfis = new Anfis(5, new ProductTNorm(), new SigmoidalTransferFunction(), false, 0.001, 100_000, 10e-5, dataSet);
             anfis.StartAlgorithm();
+            
+            anfis.WriteFuzzySetRules("fuzzy_rules");
         }
 
         private static List<TrainingData> CreateTrainingSet()

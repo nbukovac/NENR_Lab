@@ -2,7 +2,7 @@
 
 namespace Anfis.Helpers
 {
-    public class Constants
+    public static class Constants
     {
         public const int XLowerBound = -4;
         public const int XUpperBound = 4;
@@ -13,5 +13,7 @@ namespace Anfis.Helpers
 
         public const double ArrayLowerBound = -1;
         public const double ArrayUpperBound = 1;
+
+        public const string ResultsFolder = "/Results/";
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Anfis.TrainingSet
 {
-    public class TrainingSetGenerator
+    public static class TrainingSetGenerator
     {
         //((x − 1)^2 + (y + 2)^2 − 5xy + 3) ∗ cos^2 ( x/5 )
         private static readonly Func<double, double, double> Function = (x, y) =>
