@@ -14,24 +14,26 @@ namespace Anfis
         
         #region Properties
 
-        public List<TrainingData> TrainingData { get; set; }
+        private List<TrainingData> TrainingData { get; }
+
+        private int NumberOfRules { get; }
+        private ITNorm TNorm { get; }
+        private ITransferFunction SigmoidTransferFunction { get; }
+        private bool StochasticGradient { get; }
+        private double LearningRate { get; }
+        private int EpochLimit { get; }
+        private double ErrorTermination { get; }
+
+        private double[] A1 { get; set; }
+        private double[] A2 { get; set; }
+        private double[] B1 { get; set; }
+        private double[] B2 { get; set; }
+        private double[] P { get; set; }
+        private double[] Q { get; set; }
+        private double[] R { get; set; }
+
+        private List<string> ErrorsPerEpoch { get; }
         
-        public int NumberOfRules { get; set; }
-        public ITNorm TNorm { get; set; }
-        public ITransferFunction SigmoidTransferFunction { get; set; }
-        public bool StochasticGradient { get; set; }
-        public double LearningRate { get; set; }
-        public int EpochLimit { get; set; }
-        public double ErrorTermination { get; set; }
-
-        public double[] A1 { get; set; }
-        public double[] A2 { get; set; }
-        public double[] B1 { get; set; }
-        public double[] B2 { get; set; }
-        public double[] P { get; set; }
-        public double[] Q { get; set; }
-        public double[] R { get; set; }
-
         #endregion
         
         #region Constructor
@@ -49,6 +51,8 @@ namespace Anfis
             TrainingData = trainingData;
 
             InitArrays();
+            
+            ErrorsPerEpoch = new List<string>();
         }
 
         private void InitArrays()
@@ -142,8 +146,6 @@ namespace Anfis
 
         public void StartAlgorithm()
         {
-            var errorPerEpoch = new List<double>();
-
             for (int epoch = 1; epoch <= EpochLimit; epoch++)
             {
                 if (StochasticGradient)
@@ -159,9 +161,9 @@ namespace Anfis
                 }
 
                 var error = CalculateError();
-                errorPerEpoch.Add(error);
+                ErrorsPerEpoch.Add(epoch + ",\t" + error);
 
-                if (epoch % 1_000 == 0 || epoch < 100)
+                if (epoch % 1_000 == 0)
                 {
                     Console.WriteLine("Epoch => " + epoch + "\t\terror => " + error);
                 }
@@ -331,7 +333,7 @@ namespace Anfis
 
         #region File write methods
 
-        public void WriteFuzzySetRules(string fileName)
+        public List<string> WriteFuzzySetRules(string fileName)
         {
             var lines = new List<string>();
             
@@ -340,7 +342,28 @@ namespace Anfis
                 lines.Add("A1 = " + A1[i] + "\tB1 = " + B1[i] + "\tA2 = " + A2[i] + "\tB2 = " + B2[i]);
             }
             
-            HelperFunctions.WriteToFile(Environment.CurrentDirectory + Constants.ResultsFolder + fileName, lines);
+            HelperFunctions.WriteToFile(fileName, lines);
+
+            return lines;
+        }
+
+        public void WriteErrors(string fileName)
+        {
+            HelperFunctions.WriteToFile(fileName, ErrorsPerEpoch);
+        }
+
+        public void WriteOutputError(string fileName)
+        {
+            var lines = new List<string>();
+
+            foreach (var sample in TrainingData)
+            {
+                var error = Math.Abs(CalculateF(sample.X, sample.Y) - sample.F);
+                
+                lines.Add(sample.X + ",\t" + sample.Y + ",\t" + error);
+            }
+            
+            HelperFunctions.WriteToFile(fileName, lines);
         }
 
         #endregion

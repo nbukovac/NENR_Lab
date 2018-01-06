@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Anfis.Helpers
@@ -25,7 +26,7 @@ namespace Anfis.Helpers
 
         public static void WriteToFile(string filePath, IEnumerable<string> lines)
         {
-            using (var outputStream = new StreamWriter(filePath))
+            using (var outputStream = new StreamWriter(Environment.CurrentDirectory + Constants.ResultsFolder + filePath))
             {
                 foreach (var line in lines)
                 {
