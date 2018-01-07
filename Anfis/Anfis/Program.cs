@@ -11,8 +11,8 @@ namespace Anfis
     public static class Program
     {
         private const int NumberOfRules = 8;
-        private const double LearningRate = 0.0005;
-        private const bool Stohastic = false;
+        private const double LearningRate = 0.1;
+        private const bool Stohastic = true;
         
         public static void Main(string[] args)
         {
