@@ -24,7 +24,7 @@ namespace GeneticAlgorithm
                 return;
             }
             
-            var mutation = new UniformMutation(MutationProbability);
+            var mutation = new UniformMutation(MutationProbability); 
             var selection = new KTournamentSelection(TournamentSize);
             var crossover = new ArithmeticCrossover();
 
