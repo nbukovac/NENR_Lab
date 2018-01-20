@@ -22,10 +22,10 @@ namespace GeneticANN
         private const double Sigma1 = 1;
         private const double Sigma2 = 1;
         private const double ErrorLimit = 10e-7;
-        private const string Architecture = "2x8x3";
+        private const string Architecture = "2x8x4x3";
         
         private const string DatasetFilePath = "dataset.txt";
-        private const string ParametersFilePath = "parameters.txt";
+        private const string ParametersFilePath = "parameters2.txt";
         
         public static void Main(string[] args)
         {
