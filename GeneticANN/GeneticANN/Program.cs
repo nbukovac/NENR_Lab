@@ -25,7 +25,7 @@ namespace GeneticANN
         private const string Architecture = "2x8x3";
         
         private const string DatasetFilePath = "dataset.txt";
-        
+        private const string ParametersFilePath = "parameters.txt";
         
         public static void Main(string[] args)
         {
@@ -74,6 +74,8 @@ namespace GeneticANN
             }
             
             Console.WriteLine("Correct => " + correctClassification + ", Total => " + dataset.Count());
+            
+            ann.WriteNeuronLayerParametersToFile(ParametersFilePath, 1, optimum.Values);
         }
     }
 }

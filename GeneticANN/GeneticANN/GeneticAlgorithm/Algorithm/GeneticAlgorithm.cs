@@ -11,7 +11,7 @@ namespace GeneticANN.GeneticAlgorithm.Algorithm
         public ISelection<T> Selection { get; }
         public List<ICrossover<T>> Crossovers { get; }
         public int IterationLimit { get; }
-        public IFitnessFunction<T> FitnessFunction { get; set; }
+        public IFitnessFunction<T> FitnessFunction { get; }
         public double FitnessTerminator { get; }
         public int PopulationSize { get; }
         protected Population<T> Population { get; set; }

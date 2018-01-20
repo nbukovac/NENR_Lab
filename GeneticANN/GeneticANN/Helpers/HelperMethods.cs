@@ -6,7 +6,7 @@ namespace GeneticANN.Helpers
 {
     public static class HelperMethods
     {
-        public static Random Random = new Random();
+        public static readonly Random Random = new Random();
         
         public static IEnumerable<string> ReadFromFile(string filePath)
         {
@@ -23,6 +23,17 @@ namespace GeneticANN.Helpers
             }
 
             return lines;
+        }
+
+        public static void WriteToFile(string filePath, IEnumerable<string> lines)
+        {
+            using (var writer = new StreamWriter(filePath)) 
+            {
+                foreach (var line in lines)
+                {
+                    writer.WriteLine(line);
+                }
+            }
         }
     }
 }

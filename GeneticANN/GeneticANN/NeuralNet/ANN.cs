@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GeneticANN.Dataset;
+using GeneticANN.Helpers;
 
 namespace GeneticANN.NeuralNet
 {
@@ -91,6 +92,23 @@ namespace GeneticANN.NeuralNet
             }
 
             return error / dataset.Count();
+        }
+
+        public void WriteNeuronLayerParametersToFile(string filePath, int layer, double[] netParameters)
+        {
+            var lines = new List<string>();
+            
+            if (layer == 1)
+            {
+                var termOffset = 2 * NeuronsPerLayer[0] * NeuronsPerLayer[1];
+
+                for (int i = 0; i < termOffset; i += 4)
+                {
+                    lines.Add(netParameters[i] + " " + netParameters[i + 1] + " " + netParameters[i + 2] + " " + netParameters[i + 3]);
+                }
+            }
+            
+            HelperMethods.WriteToFile(filePath, lines);
         }
     }
 }
