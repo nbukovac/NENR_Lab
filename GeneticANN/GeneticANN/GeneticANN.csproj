@@ -5,6 +5,5 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="GeneticAlgorithm\Operators" />
-    <Folder Include="NeuralNet" />
   </ItemGroup>
 </Project>

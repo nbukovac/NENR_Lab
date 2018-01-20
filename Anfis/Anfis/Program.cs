@@ -11,21 +11,21 @@ namespace Anfis
     public static class Program
     {
         private const int NumberOfRules = 8;
-        private const double LearningRate = 0.1;
+        private const double LearningRate = 0.0001;
         private const bool Stohastic = true;
         
         public static void Main(string[] args)
         {
             var dataSet = CreateTrainingSet();
             var anfis = new Anfis(NumberOfRules, new ProductTNorm(), new SigmoidalTransferFunction(), Stohastic, 
-                LearningRate, 30_000, 10e-5, dataSet);
+                LearningRate, 100_000, 10e-5, dataSet);
             
             anfis.StartAlgorithm();
             
             //anfis.WriteOutputError("diff_" + NumberOfRules);
             //var rules = anfis.WriteFuzzySetRules("rules_" + NumberOfRules);
             //TransformRuleFile(rules, Environment.CurrentDirectory + "/plot_" + NumberOfRules);
-            anfis.WriteErrors("errors_" + NumberOfRules + (Stohastic ? "_stohastic" : "_gradient"));
+            //anfis.WriteErrors("errors_" + NumberOfRules + (Stohastic ? "_stohastic" : "_gradient"));
         }
 
         private static List<TrainingData> CreateTrainingSet()
