@@ -32,7 +32,8 @@ namespace GeneticANN.GeneticAlgorithm.Operators.Mutation
                 {
                     if (HelperMethods.Random.NextDouble() <= _mutationProbability)
                     {
-                        chromosome[i] += _gaussFunction(HelperMethods.Random.NextDouble(), _operator1Sigma);
+                        //chromosome[i] += _gaussFunction(chromosome[i], _operator1Sigma);
+                        chromosome[i] += (HelperMethods.Random.NextDouble() * 2 - 1) * _operator1Sigma;
                     }
                 }
             }
@@ -42,7 +43,8 @@ namespace GeneticANN.GeneticAlgorithm.Operators.Mutation
                 {
                     if (HelperMethods.Random.NextDouble() <= _mutationProbability)
                     {
-                        chromosome[i] = _gaussFunction(HelperMethods.Random.NextDouble(), _operator2Sigma);
+                        //chromosome[i] = _gaussFunction(chromosome[i], _operator2Sigma);
+                        chromosome[i] = (HelperMethods.Random.NextDouble() * 2 - 1) * _operator2Sigma;
                     }
                 }
             }

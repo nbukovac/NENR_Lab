@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GeneticANN.GeneticAlgorithm.Algorithm;
 using GeneticANN.GeneticAlgorithm.Fitness;
+using GeneticANN.GeneticAlgorithm.Operators;
 using GeneticANN.GeneticAlgorithm.Operators.Crossover;
 using GeneticANN.GeneticAlgorithm.Operators.Mutation;
 using GeneticANN.GeneticAlgorithm.Operators.Selection;
@@ -12,14 +14,14 @@ namespace GeneticANN
 {
     public static class Program
     {
-        private const int IterationLimit = 1_000_000;
+        private const int IterationLimit = 3_000_000;
         private const int TournamentSize = 3;
         private const int PopulationSize = 30;
-        private const double MutationProbability = 0.04;
+        private const double MutationProbability = 0.05;
         private const double MutationThreshold = 0.6;
         private const double Sigma1 = 1;
         private const double Sigma2 = 1;
-        private const double ErrorLimit = 10e-6;
+        private const double ErrorLimit = 10e-7;
         private const string Architecture = "2x8x3";
         
         private const string DatasetFilePath = "dataset.txt";
@@ -29,30 +31,20 @@ namespace GeneticANN
         {
             var dataset = new Dataset.Dataset(DatasetFilePath);
             var ann = new ANN(Architecture);
-
-            /*var parameters = new double[ann.NumberOfParameters];
-
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                parameters[i] = 1;
-            }
-
-            var output = ann.CalculateOutput(dataset.Samples[0].Input, parameters);
-
-            foreach (var d in output)
-            {
-                Console.WriteLine(d);
-            }*/
-
+            
             var fitness = new FitnessFunction(ann, dataset);
 
             var mutation = new GaussMutation(MutationThreshold, MutationProbability, Sigma1, Sigma2);
-            //var mutation = new UniformMutation(MutationProbability);
             var selection = new KTournamentSelection<DoubleArrayChromosome>(TournamentSize);
-            var crossover = new ArithmeticCrossover();
+            var crossovers = new List<ICrossover<DoubleArrayChromosome>>()
+            {
+                new ArithmeticCrossover(),
+                new HeuristicCrossover(),
+                new UniformCrossover()
+            };
 
             var geneticAlgorithm =
-                new EliminationGeneticAlgorithm(mutation, selection, crossover, fitness, IterationLimit, ErrorLimit, PopulationSize);
+                new EliminationGeneticAlgorithm(mutation, selection, crossovers, fitness, IterationLimit, ErrorLimit, PopulationSize);
 
             var optimum = geneticAlgorithm.FindOptimum();
             var correctClassification = 0;

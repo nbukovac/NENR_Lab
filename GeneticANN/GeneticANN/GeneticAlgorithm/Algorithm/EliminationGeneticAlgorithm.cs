@@ -1,17 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GeneticANN.GeneticAlgorithm.Fitness;
 using GeneticANN.GeneticAlgorithm.Operators;
 using GeneticANN.GeneticAlgorithm.Populations;
+using GeneticANN.Helpers;
 
 namespace GeneticANN.GeneticAlgorithm.Algorithm
 {
     public class EliminationGeneticAlgorithm : GeneticAlgorithm<DoubleArrayChromosome>
     {
         public EliminationGeneticAlgorithm(IMutation<DoubleArrayChromosome> mutation, ISelection<DoubleArrayChromosome> selection, 
-            ICrossover<DoubleArrayChromosome> crossover, IFitnessFunction<DoubleArrayChromosome> fitnessFunction, int iterationLimit, 
+            List<ICrossover<DoubleArrayChromosome>> crossovers, IFitnessFunction<DoubleArrayChromosome> fitnessFunction, int iterationLimit, 
             double fitnessTerminator, int populationSize) 
-            : base(mutation, selection, crossover, fitnessFunction, iterationLimit, fitnessTerminator, populationSize)
+            : base(mutation, selection, crossovers, fitnessFunction, iterationLimit, fitnessTerminator, populationSize)
         {
             Population = new Population<DoubleArrayChromosome>(populationSize);
             InitializePopulation();
@@ -34,8 +36,9 @@ namespace GeneticANN.GeneticAlgorithm.Algorithm
             for (var i = 0; i < IterationLimit; i++)
             {
                 var selectedFromPopulation = Selection.Select(Population).OrderBy(x => x.Fitness).ToList();
-                
-                var childChromosome = Crossover.Cross(selectedFromPopulation[0], selectedFromPopulation[1]);
+
+                var crossoverIndex = HelperMethods.Random.Next(Crossovers.Count);
+                var childChromosome = Crossovers[crossoverIndex].Cross(selectedFromPopulation[0], selectedFromPopulation[1]);
                 childChromosome = Mutation.Mutate(childChromosome);
                 childChromosome.Fitness = FitnessFunction.CalculateFitness(childChromosome);
                 

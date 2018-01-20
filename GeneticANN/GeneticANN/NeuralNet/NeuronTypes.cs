@@ -31,7 +31,7 @@ namespace GeneticANN.NeuralNet
             }
             var bias = netParameters[index + 1];
             
-            return 1 / (1 + Math.Exp(-sum + bias));
+            return 1 / (1 + Math.Exp(-sum - bias));
         }
     }
 }
